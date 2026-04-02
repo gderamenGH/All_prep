@@ -5,315 +5,123 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Studená sekce — příprava | ŠPORK</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F5F3EE;--surface:#fff;--border:rgba(0,0,0,.10);--border-strong:rgba(0,0,0,.18);
+  --text:#1A1A18;--text2:#6B6A65;--muted:#A8A79F;
+  --accent:#2A5C3F;--accent-light:#E8F0EB;--accent-mid:#C2D8C9;
+  --done:#A8A79F;--tag:#F0EDE6;--red:#c0392b;--red-light:#fdf0ee;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:1.5rem 1rem 5rem}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* HEADER */
+.page-header{max-width:700px;margin:0 auto 1.5rem;display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.logo{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.15em;color:var(--muted);text-transform:uppercase}
+.page-title{font-size:24px;font-weight:600;line-height:1.15}
+.page-sub{font-size:13px;color:var(--text2);margin-top:3px}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.header-btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.hbtn{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;background:none;border:1px solid var(--border-strong);border-radius:6px;padding:6px 12px;cursor:pointer;transition:all .15s;color:var(--muted)}
+.hbtn:hover{background:var(--surface);color:var(--text)}
+.hbtn.active{background:var(--text);color:#fff;border-color:var(--text)}
+.hbtn.danger{color:var(--red)}
+.hbtn.danger:hover{background:var(--red-light);border-color:var(--red)}
+.global-stats{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)}
 
-  :root {
-    --bg: #F5F3EE;
-    --surface: #FFFFFF;
-    --border: rgba(0,0,0,0.10);
-    --border-strong: rgba(0,0,0,0.18);
-    --text-primary: #1A1A18;
-    --text-secondary: #6B6A65;
-    --text-muted: #A8A79F;
-    --accent: #2A5C3F;
-    --accent-light: #E8F0EB;
-    --accent-mid: #C2D8C9;
-    --done-text: #A8A79F;
-    --tag-bg: #F0EDE6;
-  }
+/* CONTAINER */
+.container{max-width:700px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text-primary);
-    min-height: 100vh;
-    padding: 2rem 1rem 4rem;
-  }
+/* SECTION LABEL */
+.section-wrap{display:flex;flex-direction:column;gap:6px}
+.section-label{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;padding:8px 0 4px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.section-label-text{flex:1;outline:none;background:none;border:none;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;cursor:text;min-width:60px}
+.section-label-text:focus{color:var(--text);background:var(--tag);border-radius:3px;padding:1px 4px}
+.edit-mode .section-actions{display:flex;gap:4px}
+.section-actions{display:none}
+.sec-btn{font-size:11px;background:none;border:1px solid var(--border);border-radius:4px;padding:2px 7px;cursor:pointer;color:var(--muted);font-family:'DM Mono',monospace;transition:all .15s}
+.sec-btn:hover{border-color:var(--border-strong);color:var(--text)}
+.sec-btn.del:hover{border-color:var(--red);color:var(--red);background:var(--red-light)}
+.add-dish-btn{display:none;font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);background:var(--accent-light);border:1px dashed var(--accent-mid);border-radius:8px;padding:8px 14px;cursor:pointer;text-align:center;transition:all .15s;letter-spacing:.04em}
+.add-dish-btn:hover{background:#d4e8da}
+.edit-mode .add-dish-btn{display:block}
 
-  .page-header {
-    max-width: 680px;
-    margin: 0 auto 2rem;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .15s}
+.card:hover{border-color:var(--border-strong)}
+.card.complete{border-color:var(--accent-mid)}
+.card.drag-over{border-color:var(--accent);background:var(--accent-light)}
+.card.dragging{opacity:.4}
 
-  .logo {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.15em;
-    color: var(--text-muted);
-    text-transform: uppercase;
-  }
+.card-header{display:flex;align-items:center;gap:8px;padding:12px 14px 10px;cursor:pointer;user-select:none}
+.drag-handle{display:none;flex-shrink:0;cursor:grab;color:var(--muted);font-size:14px;padding:0 2px;line-height:1}
+.edit-mode .drag-handle{display:block}
+.drag-handle:active{cursor:grabbing}
+.card-header-left{flex:1;min-width:0}
+.dish-name{font-size:14px;font-weight:600;line-height:1.3;outline:none;background:none;border:none;color:var(--text);font-family:inherit;width:100%;cursor:pointer}
+.edit-mode .dish-name{cursor:text;border-bottom:1px dashed var(--border-strong)}
+.dish-name:focus{border-bottom-color:var(--accent);outline:none}
+.dish-meta{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-top:2px;outline:none;background:none;border:none;width:100%;font-weight:400}
+.edit-mode .dish-meta{border-bottom:1px dashed var(--border);cursor:text}
+.dish-meta:focus{border-bottom-color:var(--accent);outline:none}
+.card-header-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.progress-pill{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;padding:3px 8px;border-radius:20px;background:var(--tag);color:var(--text2);transition:all .2s;white-space:nowrap}
+.progress-pill.done-all{background:var(--accent-light);color:var(--accent)}
+.chevron{width:15px;height:15px;color:var(--muted);transition:transform .2s;flex-shrink:0}
+.card.open .chevron{transform:rotate(180deg)}
+.card-del-btn{display:none;background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;line-height:1;padding:2px;transition:color .15s;flex-shrink:0}
+.card-del-btn:hover{color:var(--red)}
+.edit-mode .card-del-btn{display:block}
 
-  .page-title {
-    font-size: 26px;
-    font-weight: 600;
-    color: var(--text-primary);
-    line-height: 1.15;
-  }
+/* PROGRESS BAR */
+.progress-bar{height:2px;background:var(--border);margin:0 14px}
+.progress-fill{height:100%;background:var(--accent);border-radius:1px;transition:width .25s ease}
 
-  .page-sub {
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-top: 4px;
-  }
+/* BODY */
+.card-body{padding:10px 14px 12px;display:none}
+.card.open .card-body{display:block}
 
-  .header-right { text-align: right; }
+/* INGREDIENTS */
+.ingredients{display:flex;flex-direction:column;gap:2px;margin-bottom:10px}
+.ing-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);transition:background .15s;border-radius:4px}
+.ing-row:last-child{border-bottom:none}
+.ing-row.ing-dragging{opacity:.3}
+.ing-row.ing-drag-over{border-bottom:2px solid var(--accent)}
+.ing-drag-handle{display:none;cursor:grab;color:var(--muted);font-size:13px;flex-shrink:0;padding:0 2px;line-height:1}
+.ing-drag-handle:active{cursor:grabbing}
+.edit-mode .ing-drag-handle{display:block}
+.checkbox{width:17px;height:17px;border:1.5px solid var(--border-strong);border-radius:4px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;background:var(--surface)}
+.checkbox:hover{border-color:var(--accent)}
+.checkbox.checked{background:var(--accent);border-color:var(--accent)}
+.checkbox.checked::after{content:'';display:block;width:8px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px)}
+.ing-label{font-size:13px;color:var(--text);flex:1;line-height:1.4;transition:color .15s;cursor:pointer;background:none;border:none;font-family:inherit;text-align:left;padding:0;outline:none}
+.ing-label.done{text-decoration:line-through;color:var(--done)}
+.edit-mode .ing-label{cursor:text;border-bottom:1px dashed transparent}
+.edit-mode .ing-label:hover{border-bottom-color:var(--border-strong)}
+.ing-label:focus{border-bottom:1px solid var(--accent);outline:none}
+.ing-en{font-size:11px;color:var(--muted);font-style:italic}
+.ing-del-btn{display:none;background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;line-height:1;padding:0 2px;flex-shrink:0;transition:color .15s}
+.ing-del-btn:hover{color:var(--red)}
+.edit-mode .ing-del-btn{display:block}
+.add-ing-btn{display:none;margin-top:6px;font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);background:none;border:1px dashed var(--accent-mid);border-radius:6px;padding:5px 10px;cursor:pointer;width:100%;text-align:center;transition:all .15s}
+.add-ing-btn:hover{background:var(--accent-light)}
+.edit-mode .add-ing-btn{display:block}
 
-  .global-reset {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    color: var(--text-muted);
-    background: none;
-    border: 1px solid var(--border-strong);
-    border-radius: 6px;
-    padding: 6px 14px;
-    cursor: pointer;
-    transition: all 0.15s;
-    text-transform: uppercase;
-  }
-  .global-reset:hover { background: var(--surface); color: var(--text-primary); }
+/* FOOTER */
+.footer-row{display:flex;align-items:flex-start;gap:6px;margin-top:6px}
+.comment-input{flex:1;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);background:var(--tag);border:1px solid transparent;border-radius:6px;padding:6px 9px;resize:none;outline:none;min-height:30px;transition:border-color .15s;line-height:1.4}
+.comment-input:focus{border-color:var(--border-strong);background:var(--surface)}
+.comment-input::placeholder{color:var(--muted)}
+.reset-btn{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:none;border:1px solid var(--border);border-radius:5px;padding:6px 9px;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.reset-btn:hover{border-color:var(--border-strong);color:var(--text2)}
 
-  .global-stats {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 6px;
-  }
+/* ADD SECTION */
+.add-section-btn{display:none;max-width:700px;margin:8px auto 0;font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);background:none;border:1px dashed var(--border-strong);border-radius:8px;padding:9px;cursor:pointer;width:100%;text-align:center;transition:all .15s;letter-spacing:.04em}
+.add-section-btn:hover{background:var(--surface);color:var(--text)}
+.edit-mode-on .add-section-btn{display:block}
 
-  .container {
-    max-width: 680px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .section-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.14em;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    padding: 6px 0 4px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 2px;
-  }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    transition: border-color 0.15s;
-  }
-  .card:hover { border-color: var(--border-strong); }
-  .card.complete { border-color: var(--accent-mid); }
-
-  .card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 14px 16px 10px;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .card-header-left { flex: 1; min-width: 0; }
-
-  .dish-name {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text-primary);
-    line-height: 1.3;
-  }
-
-  .dish-meta {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 3px;
-    letter-spacing: 0.03em;
-  }
-
-  .card-header-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-shrink: 0;
-  }
-
-  .progress-pill {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    font-weight: 500;
-    padding: 3px 9px;
-    border-radius: 20px;
-    background: var(--tag-bg);
-    color: var(--text-secondary);
-    transition: all 0.2s;
-  }
-  .progress-pill.done-all {
-    background: var(--accent-light);
-    color: var(--accent);
-  }
-
-  .chevron {
-    width: 16px;
-    height: 16px;
-    color: var(--text-muted);
-    transition: transform 0.2s;
-    flex-shrink: 0;
-  }
-  .card.open .chevron { transform: rotate(180deg); }
-
-  .progress-bar {
-    height: 2px;
-    background: var(--border);
-    margin: 0 16px;
-  }
-  .progress-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 1px;
-    transition: width 0.25s ease;
-  }
-
-  .card-body {
-    padding: 12px 16px 14px;
-    display: none;
-  }
-  .card.open .card-body { display: block; }
-
-  .ingredients {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-bottom: 12px;
-  }
-
-  .ing-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 5px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .ing-row:last-child { border-bottom: none; }
-
-  .checkbox {
-    width: 18px;
-    height: 18px;
-    border: 1.5px solid var(--border-strong);
-    border-radius: 5px;
-    cursor: pointer;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.15s;
-    background: var(--surface);
-  }
-  .checkbox:hover { border-color: var(--accent); }
-  .checkbox.checked {
-    background: var(--accent);
-    border-color: var(--accent);
-  }
-  .checkbox.checked::after {
-    content: '';
-    display: block;
-    width: 9px;
-    height: 6px;
-    border-left: 2px solid #fff;
-    border-bottom: 2px solid #fff;
-    transform: rotate(-45deg) translateY(-1px);
-  }
-
-  .ing-label {
-    font-size: 14px;
-    color: var(--text-primary);
-    cursor: pointer;
-    flex: 1;
-    line-height: 1.4;
-    transition: color 0.15s;
-  }
-  .ing-label.done {
-    text-decoration: line-through;
-    color: var(--done-text);
-  }
-
-  .footer-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    margin-top: 4px;
-  }
-
-  .comment-input {
-    flex: 1;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    color: var(--text-primary);
-    background: var(--tag-bg);
-    border: 1px solid transparent;
-    border-radius: 7px;
-    padding: 7px 10px;
-    resize: none;
-    outline: none;
-    min-height: 34px;
-    transition: border-color 0.15s;
-    line-height: 1.4;
-  }
-  .comment-input:focus { border-color: var(--border-strong); background: var(--surface); }
-  .comment-input::placeholder { color: var(--text-muted); }
-
-  .reset-btn {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 7px 10px;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .reset-btn:hover { border-color: var(--border-strong); color: var(--text-secondary); }
-
-  .ing-en {
-    font-size: 12px;
-    color: var(--text-muted);
-    font-style: italic;
-  }
-
-  .ing-label.done .ing-en { color: var(--done-text); }
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    color: var(--text-muted);
-    text-align: center;
-    margin-top: 2.5rem;
-    letter-spacing: 0.06em;
-  }
-
-  @media (max-width: 480px) {
-    body { padding: 1.2rem 0.75rem 3rem; }
-    .page-title { font-size: 22px; }
-  }
+.timestamp{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-align:center;margin-top:2rem;letter-spacing:.04em}
+@media(max-width:480px){body{padding:1rem .75rem 4rem}.page-title{font-size:20px}}
 </style>
 </head>
 <body>
@@ -325,284 +133,141 @@
     <div class="page-sub">Příprava ingrediencí · Cold section prep</div>
   </div>
   <div class="header-right">
-    <button class="global-reset" onclick="resetAll()">Resetovat vše · Reset all</button>
+    <div class="header-btns">
+      <button class="hbtn" id="edit-toggle-btn" onclick="toggleEditMode()">✏️ Upravit · Edit</button>
+      <button class="hbtn danger" onclick="resetAll()">Resetovat vše</button>
+    </div>
     <div class="global-stats" id="global-stats">0 / 0 ingrediencí</div>
   </div>
 </div>
 
-<div class="container" id="app"></div>
+<div class="container edit-mode-off" id="app"></div>
+<button class="add-section-btn" id="add-section-btn" onclick="addSection()">+ Přidat sekci · Add section</button>
 <div class="timestamp" id="timestamp"></div>
 
 <script>
-const menu = [
+const DEFAULT_MENU = [
   {
     section: 'Salát · Salad',
     dishes: [
-      {
-        id: 'gocar',
-        name: 'Salát Gočár',
-        meta: 'velikost S / L',
-        ingredients: [
-          'Dubový salát (oak leaf lettuce)',
-          'Bílý chřest (white asparagus)',
-          'Vejce na hniličku (soft-boiled egg)',
-          'Dresink z podmáslí (buttermilk dressing)',
-          'Grana Moravia',
-          'Pesto z jarní cibulky (spring onion pesto)',
-          'Lískové ořechy (hazelnuts)'
-        ]
-      },
-      {
-        id: 'bonrepos',
-        name: 'Salát Bon Repos',
-        meta: 'velikost S / L',
-        ingredients: [
-          'Burrata',
-          'Chlebový garum (bread garum)',
-          'Mladý špenát (baby spinach)',
-          'Kedlubna (kohlrabi)',
-          'Ředkvička (radish)',
-          'Ředkev Daikon (daikon radish)',
-          'Císařský hrášek (snap peas)',
-          'Jahody (strawberries)',
-          'Mátový dresink s limetkou (mint & lime dressing)',
-          'Výhonky (sprouts)'
-        ]
-      },
-      {
-        id: 'bram_salat',
-        name: 'Bramborový salát',
-        meta: 'příloha / side',
-        ingredients: [
-          'Bramborový salát (potato salad)',
-          'Řapík (celery stalk)',
-          'Ředkvičky julienne (radish julienne)',
-          'Jablka kostky (apple cubes)'
-        ]
-      },
-      {
-        id: 'okur_salat',
-        name: 'Okurkový salát',
-        meta: 'příloha / side',
-        ingredients: [
-          'Okurky (cucumbers)',
-          'Koprkový dresink (dill dressing)',
-          'Koprkový olej (dill oil)',
-          'Kopr (dill)',
-          'Jogurt (yogurt)'
-        ]
-      }
+      { id:'gocar', name:'Salát Gočár', meta:'velikost S / L',
+        ingredients:['Dubový salát (oak leaf lettuce)','Bílý chřest (white asparagus)','Vejce na hniličku (soft-boiled egg)','Dresink z podmáslí (buttermilk dressing)','Grana Moravia','Pesto z jarní cibulky (spring onion pesto)','Lískové ořechy (hazelnuts)'] },
+      { id:'bonrepos', name:'Salát Bon Repos', meta:'velikost S / L',
+        ingredients:['Burrata','Chlebový garum (bread garum)','Mladý špenát (baby spinach)','Kedlubna (kohlrabi)','Ředkvička (radish)','Ředkev Daikon (daikon radish)','Císařský hrášek (snap peas)','Jahody (strawberries)','Mátový dresink s limetkou (mint & lime dressing)','Výhonky (sprouts)'] },
+      { id:'bram_salat', name:'Bramborový salát', meta:'příloha / side',
+        ingredients:['Bramborový salát (potato salad)','Řapík (celery stalk)','Ředkvičky julienne (radish julienne)','Jablka kostky (apple cubes)'] },
+      { id:'okur_salat', name:'Okurkový salát', meta:'příloha / side',
+        ingredients:['Okurky (cucumbers)','Koprkový dresink (dill dressing)','Koprkový olej (dill oil)','Kopr (dill)','Jogurt (yogurt)'] }
     ]
   },
   {
     section: 'Studené předkrmy · Cold starters',
     dishes: [
-      {
-        id: 'spork',
-        name: 'Studené předkrmové prkénko ŠPORK',
-        meta: 'pro 2 osoby',
-        ingredients: [
-          'Husí paštika (goose pâté)',
-          'Ovocný chléb s ořechy (fruit & nut bread)',
-          'Ředkvička (radish)',
-          'Kváskový chléb s pažitkou (sourdough with chives)'
-        ]
-      },
-      {
-        id: 'tatarak',
-        name: 'Hovězí tatarák',
-        meta: '150g',
-        ingredients: [
-          'Žloutkový gel (egg yolk gel)',
-          'Cibule (onion)',
-          'Cibulky (spring onions)',
-          'Hořčičná semínka (mustard seeds)',
-          'Majonéza z černého česneku (black garlic mayo)',
-          'Červený pepř (red pepper)',
-          'Zelený pepř (green pepper)',
-          'Marináda na tatarák (tartare marinade)'
-        ]
-      },
-      {
-        id: 'susena',
-        name: 'Sušená masa z rodinného řeznictví Čejka',
-        meta: '160g',
-        ingredients: [
-          'Vepřový bok (pork belly)',
-          'Hovězí roštěnec (beef sirloin)',
-          'Vepřová šunka (pork ham)',
-          'Hovězí klobása se zeleným pepřem (beef sausage, green pepper)',
-          'Nakládaná zelenina (pickled vegetables)',
-          'Remouládová omáčka (remoulade sauce)'
-        ]
-      },
-      {
-        id: 'pastika',
-        name: 'Naše paštika',
-        meta: '100g',
-        ingredients: [
-          'Paštika (pâté)',
-          'Ovocný chléb s ořechy (fruit & nut bread)',
-          'Červený rybíz s tymiánem (red currant with thyme)'
-        ]
-      }
+      { id:'spork', name:'Studené předkrmové prkénko ŠPORK', meta:'pro 2 osoby',
+        ingredients:['Husí paštika (goose pâté)','Ovocný chléb s ořechy (fruit & nut bread)','Ředkvička (radish)','Kváskový chléb s pažitkou (sourdough with chives)'] },
+      { id:'tatarak', name:'Hovězí tatarák', meta:'150g',
+        ingredients:['Žloutkový gel (egg yolk gel)','Cibule (onion)','Cibulky (spring onions)','Hořčičná semínka (mustard seeds)','Majonéza z černého česneku (black garlic mayo)','Červený pepř (red pepper)','Zelený pepř (green pepper)','Marináda na tatarák (tartare marinade)'] },
+      { id:'burger', name:'Burger', meta:'hlavní chod / main',
+        ingredients:['Lanýžová majonéza (truffle mayo)','Foie gras'] },
+      { id:'susena', name:'Sušená masa z rodinného řeznictví Čejka', meta:'160g',
+        ingredients:['Vepřový bok (pork belly)','Hovězí roštěnec (beef sirloin)','Vepřová šunka (pork ham)','Hovězí klobása se zeleným pepřem (beef sausage, green pepper)','Nakládaná zelenina (pickled vegetables)','Remouládová omáčka (remoulade sauce)'] },
+      { id:'pastika', name:'Naše paštika', meta:'100g',
+        ingredients:['Paštika (pâté)','Ovocný chléb s ořechy (fruit & nut bread)','Červený rybíz s tymiánem (red currant with thyme)'] }
     ]
   },
   {
     section: 'Vegetariánské · Vegetarian',
     dishes: [
-      {
-        id: 'tenderloin',
-        name: 'Trhaný veganský tenderloin v barbeque omáčce',
-        meta: '80g · vegan',
-        ingredients: [
-          'Veganská BBQ omáčka (vegan BBQ sauce)',
-          'Tenderloin vege'
-        ]
-      },
-      {
-        id: 'krekry',
-        name: 'Chlebové krekry',
-        meta: '140g · vegan',
-        ingredients: [
-          'Krekry (crackers)',
-          'Dýňový hummus s jogurtem a tahini — 100g (pumpkin hummus, yogurt, tahini)',
-          'Sýrový dip — 100g (cheese dip)',
-          'Smažená cizrna na dýňový hummus (fried chickpeas for pumpkin hummus)'
-        ]
-      }
+      { id:'tenderloin', name:'Trhaný veganský tenderloin v barbeque omáčce', meta:'80g · vegan',
+        ingredients:['Veganská BBQ omáčka (vegan BBQ sauce)','Tenderloin vege'] },
+      { id:'krekry', name:'Chlebové krekry', meta:'140g · vegan',
+        ingredients:['Krekry (crackers)','Dýňový hummus s jogurtem a tahini — 100g (pumpkin hummus, yogurt, tahini)','Sýrový dip — 100g (cheese dip)','Smažená cizrna na dýňový hummus (fried chickpeas for pumpkin hummus)'] }
     ]
   },
   {
     section: 'Sýry · Cheese',
     dishes: [
-      {
-        id: 'syr_biofarma',
-        name: 'Sýry z Biofarmy Krasolesí',
-        meta: 'pro 2 osoby | 150g',
-        ingredients: [
-          'Plísňový kravský sýr v popelu (ash-ripened cow blue cheese)',
-          'Vyzrálý kravský horský sýr (aged mountain cow cheese)',
-          'Sýr Rys',
-          'Svatojánské ořechy (St. John\'s walnuts)',
-          'Jahodová marmeláda s červeným pepřem (strawberry jam, red pepper)',
-          'Naše semínkové krekry (seed crackers)'
-        ]
-      },
-      {
-        id: 'syr_francie',
-        name: 'Sýry z Francie',
-        meta: 'pro 2 osoby | 150g',
-        ingredients: [
-          'Comté',
-          'Brillat savarin AOP',
-          'Pečené ořechy (roasted nuts)',
-          'Jahodová marmeláda s červeným pepřem (strawberry jam, red pepper)',
-          'Naše semínkové krekry (seed crackers)'
-        ]
-      },
-      {
-        id: 'syr_plisn',
-        name: 'Plísňový kravský sýr v popelu',
-        meta: '50g',
-        ingredients: [
-          'Svatojánské ořechy (St. John\'s walnuts)',
-          'Jahodová marmeláda s červeným pepřem (strawberry jam, red pepper)',
-          'Naše semínkové krekry (seed crackers)'
-        ]
-      },
-      {
-        id: 'syr_brillat',
-        name: 'Brillat savarin AOP',
-        meta: '50g',
-        ingredients: [
-          'Pečené ořechy (roasted nuts)',
-          'Jahodová marmeláda s červeným pepřem (strawberry jam, red pepper)',
-          'Naše semínkové krekry (seed crackers)'
-        ]
-      }
+      { id:'syr_biofarma', name:'Sýry z Biofarmy Krasolesí', meta:'pro 2 osoby | 150g',
+        ingredients:['Plísňový kravský sýr v popelu (ash-ripened cow blue cheese)','Vyzrálý kravský horský sýr (aged mountain cow cheese)','Sýr Rys','Svatojánské ořechy (St. John\'s walnuts)','Jahodová marmeláda s červeným pepřem (strawberry jam, red pepper)','Naše semínkové krekry (seed crackers)'] },
+      { id:'syr_francie', name:'Sýry z Francie', meta:'pro 2 osoby | 150g',
+        ingredients:['Comté','Brillat savarin AOP','Pečené ořechy (roasted nuts)','Jahodová marmeláda s červeným pepřem (strawberry jam, red pepper)','Naše semínkové krekry (seed crackers)'] },
+      { id:'syr_plisn', name:'Plísňový kravský sýr v popelu', meta:'50g',
+        ingredients:['Svatojánské ořechy (St. John\'s walnuts)','Jahodová marmeláda s červeným pepřem (strawberry jam, red pepper)','Naše semínkové krekry (seed crackers)'] },
+      { id:'syr_brillat', name:'Brillat savarin AOP', meta:'50g',
+        ingredients:['Pečené ořechy (roasted nuts)','Jahodová marmeláda s červeným pepřem (strawberry jam, red pepper)','Naše semínkové krekry (seed crackers)'] }
     ]
   },
   {
     section: 'Dezert · Dessert',
     dishes: [
-      {
-        id: 'kaiserschmarrn',
-        name: 'Císařský trhanec „Kaiserschmarrn"',
-        meta: 'dezert',
-        ingredients: [
-          'Jahodová omáčka s bezinkou (strawberry & elderflower sauce)',
-          'Třešňovice (cherries in syrup)',
-          'Mandle (almonds)',
-          'Vanilková zakysaná smetana (vanilla sour cream)',
-          'Cukr (sugar)',
-          'Moučkový cukr (icing sugar)',
-          'Přepuštěné máslo (clarified butter)'
-        ]
-      }
-    ]
-  },
-  {
-    section: 'Burger',
-    dishes: [
-      {
-        id: 'burger',
-        name: 'Burger',
-        meta: 'hlavní chod / main',
-        ingredients: [
-          'Lanýžová majonéza (truffle mayo)',
-          'Foie gras'
-        ]
-      }
+      { id:'kaiserschmarrn', name:'Císařský trhanec „Kaiserschmarrn"', meta:'dezert',
+        ingredients:['Jahodová omáčka s bezinkou (strawberry & elderflower sauce)','Třešňovice (cherries in syrup)','Mandle (almonds)','Vanilková zakysaná smetana (vanilla sour cream)','Cukr (sugar)','Moučkový cukr (icing sugar)','Přepuštěné máslo (clarified butter)'] }
     ]
   },
   {
     section: 'Dekorace & bylinky · Garnish & herbs',
     dishes: [
-      {
-        id: 'byliny',
-        name: 'Bylinky & dekorace',
-        meta: 'garnish',
-        ingredients: [
-          'Kerblík (chervil)',
-          'Pažitka (chives)',
-          'Vyšlehané máslo (whipped butter)'
-        ]
-      }
+      { id:'byliny', name:'Bylinky & dekorace', meta:'garnish',
+        ingredients:['Kerblík (chervil)','Pažitka (chives)','Vyšlehané máslo (whipped butter)'] }
     ]
   },
   {
     section: 'Vybavení sekce · Equipment',
     dishes: [
-      {
-        id: 'vybaveni',
-        name: 'Nádobí & vybavení',
-        meta: 'equipment check',
-        ingredients: [
-          'Pánve (pans)',
-          'Hrnec (pot)',
-          'Gastro nádoby (gastro containers)',
-          'Lžíce (spoons)',
-          'Mísy (mixing bowls)',
-          'Tvořítka (molds / ring cutters)'
-        ]
-      }
+      { id:'vybaveni', name:'Nádobí & vybavení', meta:'equipment check',
+        ingredients:['Pánve (pans)','Hrnec (pot)','Gastro nádoby (gastro containers)','Lžíce (spoons)','Mísy (mixing bowls)','Tvořítka (molds / ring cutters)'] }
     ]
   }
 ];
 
-const state = {};
-menu.forEach(sec => {
-  sec.dishes.forEach(d => {
-    state[d.id] = { checked: {}, comment: '', open: false };
-    d.ingredients.forEach((_, i) => { state[d.id].checked[i] = false; });
+// ── State ──────────────────────────────────────────────
+let menu = [];
+let state = {};
+let editMode = false;
+let dragSrcDish = null;
+let dragSrcSec = null;
+let dragSrcIngIdx = null;
+let dragSrcDishId = null;
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem('spork_menu_v2');
+    if (saved) { menu = JSON.parse(saved); }
+    else { menu = JSON.parse(JSON.stringify(DEFAULT_MENU)); }
+  } catch(e) { menu = JSON.parse(JSON.stringify(DEFAULT_MENU)); }
+  // ensure ids
+  menu.forEach(sec => { sec.id = sec.id || uid(); sec.dishes.forEach(d => { d.id = d.id || uid(); }); });
+  rebuildState();
+}
+
+function saveData() {
+  try { localStorage.setItem('spork_menu_v2', JSON.stringify(menu)); } catch(e) {}
+}
+
+function rebuildState() {
+  const oldState = JSON.parse(JSON.stringify(state));
+  state = {};
+  menu.forEach(sec => {
+    sec.dishes.forEach(d => {
+      const old = oldState[d.id] || {};
+      state[d.id] = {
+        checked: old.checked || {},
+        comment: old.comment || '',
+        open: old.open || false
+      };
+      d.ingredients.forEach((_, i) => {
+        if (state[d.id].checked[i] === undefined) state[d.id].checked[i] = false;
+      });
+    });
   });
-});
+}
 
 function allDishes() { return menu.flatMap(s => s.dishes); }
 
 function getProgress(dishId, total) {
-  const n = Object.values(state[dishId].checked).filter(Boolean).length;
+  const n = Object.values(state[dishId] && state[dishId].checked || {}).filter(Boolean).length;
   return { n, pct: total === 0 ? 0 : Math.round((n / total) * 100) };
 }
 
@@ -610,19 +275,20 @@ function updateGlobalStats() {
   let total = 0, done = 0;
   allDishes().forEach(d => {
     total += d.ingredients.length;
-    done += Object.values(state[d.id].checked).filter(Boolean).length;
+    done += Object.values(state[d.id] && state[d.id].checked || {}).filter(Boolean).length;
   });
-  document.getElementById('global-stats').textContent = done + ' / ' + total + ' ingrediencí (ingredients)';
+  document.getElementById('global-stats').textContent = done + ' / ' + total + ' ingrediencí';
 }
 
 function updateTimestamp() {
   const now = new Date();
   document.getElementById('timestamp').textContent =
-    'Aktualizováno (Updated): ' + now.toLocaleTimeString('cs-CZ', {hour:'2-digit', minute:'2-digit'}) +
-    ' · ' + now.toLocaleDateString('cs-CZ', {day:'2-digit', month:'2-digit', year:'numeric'});
+    'Aktualizováno: ' + now.toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'}) +
+    ' · ' + now.toLocaleDateString('cs-CZ',{day:'2-digit',month:'2-digit',year:'numeric'});
 }
 
 function resetAll() {
+  if (!confirm('Resetovat všechny zaškrtnuté položky? · Reset all checked items?')) return;
   allDishes().forEach(d => {
     d.ingredients.forEach((_, i) => { state[d.id].checked[i] = false; });
     state[d.id].comment = '';
@@ -630,32 +296,219 @@ function resetAll() {
   render();
 }
 
+function toggleEditMode() {
+  editMode = !editMode;
+  const btn = document.getElementById('edit-toggle-btn');
+  const app = document.getElementById('app');
+  const addSec = document.getElementById('add-section-btn');
+  if (editMode) {
+    btn.classList.add('active');
+    btn.textContent = '✓ Hotovo · Done';
+    app.classList.add('edit-mode');
+    app.classList.remove('edit-mode-off');
+    addSec.parentElement.classList.add('edit-mode-on');
+  } else {
+    btn.classList.remove('active');
+    btn.textContent = '✏️ Upravit · Edit';
+    app.classList.remove('edit-mode');
+    app.classList.add('edit-mode-off');
+    addSec.parentElement.classList.remove('edit-mode-on');
+    saveData();
+  }
+  render();
+}
+
+// ── CRUD ──────────────────────────────────────────────
+function addSection() {
+  const sec = { id: uid(), section: 'Nová sekce · New section', dishes: [] };
+  menu.push(sec);
+  saveData(); render();
+}
+
+function deleteSection(secId) {
+  if (!confirm('Smazat celou sekci? · Delete entire section?')) return;
+  menu = menu.filter(s => s.id !== secId);
+  saveData(); render();
+}
+
+function addDish(secId) {
+  const sec = menu.find(s => s.id === secId);
+  if (!sec) return;
+  const d = { id: uid(), name: 'Nové jídlo · New dish', meta: '', ingredients: ['Ingredience (ingredient)'] };
+  sec.dishes.push(d);
+  state[d.id] = { checked: {0: false}, comment: '', open: true };
+  saveData(); render();
+}
+
+function deleteDish(dishId) {
+  if (!confirm('Smazat toto jídlo? · Delete this dish?')) return;
+  menu.forEach(sec => { sec.dishes = sec.dishes.filter(d => d.id !== dishId); });
+  saveData(); render();
+}
+
+function addIngredient(dishId) {
+  const dish = allDishes().find(d => d.id === dishId);
+  if (!dish) return;
+  dish.ingredients.push('Nová ingredience (new ingredient)');
+  const i = dish.ingredients.length - 1;
+  state[dishId].checked[i] = false;
+  state[dishId].open = true;
+  saveData(); render();
+  // focus new ingredient
+  setTimeout(() => {
+    const rows = document.querySelectorAll('[data-dish="' + dishId + '"] .ing-label');
+    if (rows.length) { const last = rows[rows.length - 1]; last.focus(); selectAll(last); }
+  }, 50);
+}
+
+function deleteIngredient(dishId, idx) {
+  const dish = allDishes().find(d => d.id === dishId);
+  if (!dish) return;
+  dish.ingredients.splice(idx, 1);
+  // rebuild checked map
+  const newChecked = {};
+  dish.ingredients.forEach((_, i) => { newChecked[i] = state[dishId].checked[i >= idx ? i + 1 : i] || false; });
+  state[dishId].checked = newChecked;
+  saveData(); render();
+}
+
+function selectAll(el) {
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+// ── DRAG & DROP — dishes ──────────────────────────────
+function onDishDragStart(e, secIdx, dishIdx) {
+  dragSrcSec = secIdx; dragSrcDish = dishIdx;
+  e.dataTransfer.effectAllowed = 'move';
+}
+function onDishDragOver(e, secIdx, dishIdx) {
+  e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+}
+function onDishDrop(e, secIdx, dishIdx) {
+  e.preventDefault();
+  if (dragSrcSec === null) return;
+  const srcDish = menu[dragSrcSec].dishes.splice(dragSrcDish, 1)[0];
+  menu[secIdx].dishes.splice(dishIdx, 0, srcDish);
+  dragSrcSec = null; dragSrcDish = null;
+  saveData(); render();
+}
+
+// ── DRAG & DROP — ingredients ─────────────────────────
+function onIngDragStart(e, dishId, idx) {
+  dragSrcDishId = dishId; dragSrcIngIdx = idx;
+  e.dataTransfer.effectAllowed = 'move';
+}
+function onIngDrop(e, dishId, idx) {
+  e.preventDefault();
+  if (dragSrcDishId !== dishId) return;
+  const dish = allDishes().find(d => d.id === dishId);
+  const moved = dish.ingredients.splice(dragSrcIngIdx, 1)[0];
+  dish.ingredients.splice(idx, 0, moved);
+  // rebuild checked
+  const oldChecked = Object.assign({}, state[dishId].checked);
+  const arr = dish.ingredients.map((_, i) => {
+    if (i === idx) return oldChecked[dragSrcIngIdx] || false;
+    if (dragSrcIngIdx < idx) return oldChecked[i < dragSrcIngIdx ? i : (i === idx ? dragSrcIngIdx : i - 1 < dragSrcIngIdx ? i : i)] || false;
+    return oldChecked[i] || false;
+  });
+  arr.forEach((v, i) => { state[dishId].checked[i] = v; });
+  dragSrcIngIdx = null; dragSrcDishId = null;
+  saveData(); render();
+}
+
+// ── RENDER INGREDIENT LABEL ───────────────────────────
+function renderIngLabel(ing) {
+  const match = ing.match(/^(.+?)\s*\((.+)\)$/);
+  if (match) return match[1] + ' <span class="ing-en">(' + match[2] + ')</span>';
+  return ing;
+}
+
+// ── MAIN RENDER ───────────────────────────────────────
 function render() {
   const app = document.getElementById('app');
   app.innerHTML = '';
 
-  menu.forEach(sec => {
-    const label = document.createElement('div');
-    label.className = 'section-label';
-    label.textContent = sec.section;
-    app.appendChild(label);
+  menu.forEach((sec, secIdx) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'section-wrap';
 
-    sec.dishes.forEach(dish => {
+    // Section label
+    const labelRow = document.createElement('div');
+    labelRow.className = 'section-label';
+
+    const labelText = document.createElement('span');
+    labelText.className = 'section-label-text';
+    labelText.contentEditable = editMode ? 'true' : 'false';
+    labelText.textContent = sec.section;
+    labelText.oninput = () => { sec.section = labelText.textContent.trim(); };
+    labelText.onblur = () => { saveData(); };
+    labelText.onclick = e => { if (editMode) { e.stopPropagation(); } };
+
+    const secActions = document.createElement('div');
+    secActions.className = 'section-actions';
+    const delSecBtn = document.createElement('button');
+    delSecBtn.className = 'sec-btn del';
+    delSecBtn.textContent = '× Smazat sekci';
+    delSecBtn.onclick = e => { e.stopPropagation(); deleteSection(sec.id); };
+    secActions.appendChild(delSecBtn);
+
+    labelRow.appendChild(labelText);
+    labelRow.appendChild(secActions);
+    wrap.appendChild(labelRow);
+
+    // Dishes
+    sec.dishes.forEach((dish, dishIdx) => {
+      if (!state[dish.id]) state[dish.id] = { checked: {}, comment: '', open: false };
       const total = dish.ingredients.length;
       const { n, pct } = getProgress(dish.id, total);
       const isOpen = state[dish.id].open;
-      const allDone = n === total;
+      const allDone = n === total && total > 0;
 
       const card = document.createElement('div');
       card.className = 'card' + (isOpen ? ' open' : '') + (allDone ? ' complete' : '');
+      card.setAttribute('data-dish', dish.id);
+      if (editMode) {
+        card.draggable = true;
+        card.ondragstart = e => onDishDragStart(e, secIdx, dishIdx);
+        card.ondragover = e => { onDishDragOver(e, secIdx, dishIdx); card.classList.add('drag-over'); };
+        card.ondragleave = () => card.classList.remove('drag-over');
+        card.ondrop = e => { card.classList.remove('drag-over'); onDishDrop(e, secIdx, dishIdx); };
+      }
 
+      // Header
       const header = document.createElement('div');
       header.className = 'card-header';
-      header.onclick = () => { state[dish.id].open = !state[dish.id].open; render(); };
+
+      const handle = document.createElement('span');
+      handle.className = 'drag-handle';
+      handle.textContent = '⠿';
+      handle.title = 'Přetáhnout · Drag';
 
       const left = document.createElement('div');
       left.className = 'card-header-left';
-      left.innerHTML = '<div class="dish-name">' + dish.name + '</div><div class="dish-meta">' + dish.meta + '</div>';
+
+      const nameEl = document.createElement('div');
+      nameEl.className = 'dish-name';
+      nameEl.contentEditable = editMode ? 'true' : 'false';
+      nameEl.textContent = dish.name;
+      nameEl.oninput = () => { dish.name = nameEl.textContent.trim(); };
+      nameEl.onblur = () => saveData();
+      nameEl.onclick = e => { if (editMode) { e.stopPropagation(); } };
+
+      const metaEl = document.createElement('div');
+      metaEl.className = 'dish-meta';
+      metaEl.contentEditable = editMode ? 'true' : 'false';
+      metaEl.textContent = dish.meta;
+      metaEl.oninput = () => { dish.meta = metaEl.textContent.trim(); };
+      metaEl.onblur = () => saveData();
+      metaEl.onclick = e => { if (editMode) e.stopPropagation(); };
+
+      left.appendChild(nameEl);
+      left.appendChild(metaEl);
 
       const right = document.createElement('div');
       right.className = 'card-header-right';
@@ -664,18 +517,36 @@ function render() {
       pill.className = 'progress-pill' + (allDone ? ' done-all' : '');
       pill.textContent = n + '/' + total;
 
-      const chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      chevron.setAttribute('class', 'chevron');
-      chevron.setAttribute('viewBox', '0 0 16 16');
-      chevron.setAttribute('fill', 'none');
+      const delBtn = document.createElement('button');
+      delBtn.className = 'card-del-btn';
+      delBtn.textContent = '×';
+      delBtn.title = 'Smazat jídlo';
+      delBtn.onclick = e => { e.stopPropagation(); deleteDish(dish.id); };
+
+      const chevron = document.createElementNS('http://www.w3.org/2000/svg','svg');
+      chevron.setAttribute('class','chevron');
+      chevron.setAttribute('viewBox','0 0 16 16');
+      chevron.setAttribute('fill','none');
       chevron.innerHTML = '<path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>';
 
       right.appendChild(pill);
+      right.appendChild(delBtn);
       right.appendChild(chevron);
+
+      header.appendChild(handle);
       header.appendChild(left);
       header.appendChild(right);
+
+      // Toggle open on header click (not edit mode clicks)
+      header.onclick = e => {
+        if (editMode) return;
+        state[dish.id].open = !state[dish.id].open;
+        render();
+      };
+
       card.appendChild(header);
 
+      // Progress bar
       const bar = document.createElement('div');
       bar.className = 'progress-bar';
       const fill = document.createElement('div');
@@ -684,82 +555,124 @@ function render() {
       bar.appendChild(fill);
       card.appendChild(bar);
 
+      // Body
       const body = document.createElement('div');
       body.className = 'card-body';
 
       const ingList = document.createElement('div');
       ingList.className = 'ingredients';
 
-      dish.ingredients.forEach(function(ing, i) {
+      dish.ingredients.forEach((ing, i) => {
         const row = document.createElement('div');
         row.className = 'ing-row';
+
+        if (editMode) {
+          row.draggable = true;
+          row.ondragstart = e => { e.stopPropagation(); onIngDragStart(e, dish.id, i); row.classList.add('ing-dragging'); };
+          row.ondragend = () => row.classList.remove('ing-dragging');
+          row.ondragover = e => { e.preventDefault(); e.stopPropagation(); row.classList.add('ing-drag-over'); };
+          row.ondragleave = () => row.classList.remove('ing-drag-over');
+          row.ondrop = e => { e.stopPropagation(); row.classList.remove('ing-drag-over'); onIngDrop(e, dish.id, i); };
+        }
+
+        const ingHandle = document.createElement('span');
+        ingHandle.className = 'ing-drag-handle';
+        ingHandle.textContent = '⠿';
 
         const box = document.createElement('div');
         box.className = 'checkbox' + (state[dish.id].checked[i] ? ' checked' : '');
 
         const lbl = document.createElement('span');
         lbl.className = 'ing-label' + (state[dish.id].checked[i] ? ' done' : '');
-        const match = ing.match(/^(.+?)\s*\((.+)\)$/);
-        if (match) {
-          lbl.innerHTML = match[1] + ' <span class="ing-en">(' + match[2] + ')</span>';
-        } else {
+
+        if (editMode) {
+          lbl.contentEditable = 'true';
           lbl.textContent = ing;
+          lbl.oninput = () => { dish.ingredients[i] = lbl.textContent.trim(); };
+          lbl.onblur = () => saveData();
+          lbl.onclick = e => e.stopPropagation();
+        } else {
+          lbl.innerHTML = renderIngLabel(ing);
+          lbl.onclick = e => { e.stopPropagation(); state[dish.id].checked[i] = !state[dish.id].checked[i]; saveData(); render(); };
         }
 
-        const toggle = function(e) {
+        box.onclick = e => {
           e.stopPropagation();
+          if (editMode) return;
           state[dish.id].checked[i] = !state[dish.id].checked[i];
-          render();
+          saveData(); render();
         };
-        box.onclick = toggle;
-        lbl.onclick = toggle;
 
+        const delIng = document.createElement('button');
+        delIng.className = 'ing-del-btn';
+        delIng.textContent = '×';
+        delIng.title = 'Smazat ingredienci';
+        delIng.onclick = e => { e.stopPropagation(); deleteIngredient(dish.id, i); };
+
+        row.appendChild(ingHandle);
         row.appendChild(box);
         row.appendChild(lbl);
+        row.appendChild(delIng);
         ingList.appendChild(row);
       });
 
-      body.appendChild(ingList);
+      // Add ingredient button
+      const addIngBtn = document.createElement('button');
+      addIngBtn.className = 'add-ing-btn';
+      addIngBtn.textContent = '+ Přidat ingredienci · Add ingredient';
+      addIngBtn.onclick = e => { e.stopPropagation(); addIngredient(dish.id); };
 
+      body.appendChild(ingList);
+      body.appendChild(addIngBtn);
+
+      // Comment + reset
       const footer = document.createElement('div');
       footer.className = 'footer-row';
-
       const ta = document.createElement('textarea');
       ta.className = 'comment-input';
-      ta.placeholder = 'Poznámka (nechybí, náhrada…) · Note (missing, substitute…)';
+      ta.placeholder = 'Poznámka · Note (missing, substitute…)';
       ta.rows = 1;
       ta.value = state[dish.id].comment;
-      ta.oninput = function(e) {
+      ta.oninput = e => {
         e.stopPropagation();
         state[dish.id].comment = e.target.value;
         e.target.style.height = 'auto';
         e.target.style.height = e.target.scrollHeight + 'px';
-        updateTimestamp();
+        saveData(); updateTimestamp();
       };
-      ta.onclick = function(e) { e.stopPropagation(); };
-
-      const resetBtn = document.createElement('button');
-      resetBtn.className = 'reset-btn';
-      resetBtn.textContent = 'Reset';
-      resetBtn.onclick = function(e) {
+      ta.onclick = e => e.stopPropagation();
+      const rstBtn = document.createElement('button');
+      rstBtn.className = 'reset-btn';
+      rstBtn.textContent = 'Reset';
+      rstBtn.onclick = e => {
         e.stopPropagation();
-        dish.ingredients.forEach(function(_, i) { state[dish.id].checked[i] = false; });
+        dish.ingredients.forEach((_, i) => { state[dish.id].checked[i] = false; });
         state[dish.id].comment = '';
-        render();
+        saveData(); render();
       };
-
       footer.appendChild(ta);
-      footer.appendChild(resetBtn);
+      footer.appendChild(rstBtn);
       body.appendChild(footer);
       card.appendChild(body);
-      app.appendChild(card);
+      wrap.appendChild(card);
     });
+
+    // Add dish button
+    const addDishBtn = document.createElement('button');
+    addDishBtn.className = 'add-dish-btn';
+    addDishBtn.textContent = '+ Přidat jídlo · Add dish';
+    addDishBtn.onclick = () => addDish(sec.id);
+    wrap.appendChild(addDishBtn);
+
+    app.appendChild(wrap);
   });
 
   updateGlobalStats();
   updateTimestamp();
 }
 
+// ── INIT ──────────────────────────────────────────────
+loadData();
 render();
 </script>
 </body>
