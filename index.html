@@ -341,15 +341,15 @@ function setSyncStatus(status, msg){
 // ── FIREBASE ──────────────────────────────────────────
 function initFirebase(){
   setSyncStatus('loading','Načítám data…');
-  // Listen to cold
   window._fbListen('menu/cold', val => {
+    // Не перезаписывай пока идёт редактирование
+    if(ems.cold) return;
     if(val){
       menus.cold = val;
       menus.cold.forEach(sec=>{sec.id=sec.id||uid();sec.dishes.forEach(d=>{d.id=d.id||uid();});});
       rebuildState('cold');
       render('cold');
     } else {
-      // first time - push defaults
       menus.cold = JSON.parse(JSON.stringify(DEFAULTS.cold));
       rebuildState('cold');
       render('cold');
@@ -357,8 +357,8 @@ function initFirebase(){
     }
     setSyncStatus('ok','Synchronizováno · Synced');
   });
-  // Listen to hot
   window._fbListen('menu/hot', val => {
+    if(ems.hot) return;
     if(val){
       menus.hot = val;
       menus.hot.forEach(sec=>{sec.id=sec.id||uid();sec.dishes.forEach(d=>{d.id=d.id||uid();});});
@@ -370,12 +370,12 @@ function initFirebase(){
       render('hot');
       window._fbSet('menu/hot', menus.hot);
     }
+    setSyncStatus('ok','Synchronizováno · Synced');
   });
 }
 
 function saveData(t){
   if(!fbReady){
-    // fallback to localStorage
     try{localStorage.setItem('spork_offline_'+t, JSON.stringify(menus[t]));}catch(e){}
     return;
   }
@@ -385,7 +385,7 @@ function saveData(t){
     window._fbSet('menu/'+t, menus[t])
       .then(()=>setSyncStatus('ok','Uloženo · Saved'))
       .catch(()=>setSyncStatus('err','Chyba uložení · Save error'));
-  }, 800); // debounce 800ms
+  }, 1200);
 }
 
 // Wait for Firebase
@@ -464,13 +464,19 @@ function downloadBackup(){
 
 // ── ACTIONS ───────────────────────────────────────────
 function factoryReset(t){
-  if(!confirm('Obnovit původní data? Všechny úpravy budou ztraceny.'))return;
   saveSnapshot(t);
   menus[t]=JSON.parse(JSON.stringify(DEFAULTS[t]));
-  states[t]={};rebuildState(t);saveData(t);render(t);updateUndoBtn(t);
+  states[t]={};rebuildState(t);
+  clearTimeout(saveTimeout);
+  if(fbReady){
+    setSyncStatus('loading','Ukládám…');
+    window._fbSet('menu/'+t, menus[t])
+      .then(()=>setSyncStatus('ok','Obnoveno · Restored'))
+      .catch(()=>setSyncStatus('err','Chyba · Error'));
+  }
+  render(t);updateUndoBtn(t);
 }
 function resetAll(t){
-  if(!confirm('Resetovat všechny zaškrtnuté položky?'))return;
   allDishes(t).forEach(d=>{d.ingredients.forEach((_,i)=>{states[t][d.id].checked[i]=false;});states[t][d.id].comment='';});
   saveData(t);render(t);
 }
@@ -479,35 +485,58 @@ function toggleEdit(t){
   const btn=document.getElementById('edit-btn-'+t);
   const app=document.getElementById('app-'+t);
   const asw=document.getElementById('asw-'+t);
-  if(ems[t]){btn.classList.add('active');btn.textContent='✓ Hotovo';app.classList.add('edit-mode');asw.classList.add('show-add-sec');}
-  else{btn.classList.remove('active');btn.textContent='✏️ Upravit';app.classList.remove('edit-mode');asw.classList.remove('show-add-sec');saveData(t);}
+  if(ems[t]){
+    // Входим в режим редактирования
+    btn.classList.add('active');btn.textContent='✓ Hotovo';
+    app.classList.add('edit-mode');asw.classList.add('show-add-sec');
+    setSyncStatus('loading','Режим редактирования · Edit mode');
+  } else {
+    // Выходим — сохраняем всё в Firebase
+    btn.classList.remove('active');btn.textContent='✏️ Upravit';
+    app.classList.remove('edit-mode');asw.classList.remove('show-add-sec');
+    // Принудительное немедленное сохранение
+    clearTimeout(saveTimeout);
+    if(fbReady){
+      setSyncStatus('loading','Ukládám…');
+      window._fbSet('menu/'+t, menus[t])
+        .then(()=>setSyncStatus('ok','Uloženo · Saved'))
+        .catch(()=>setSyncStatus('err','Chyba uložení · Save error'));
+    } else {
+      try{localStorage.setItem('spork_offline_'+t, JSON.stringify(menus[t]));}catch(e){}
+    }
+  }
   updateUndoBtn(t);
   render(t);
 }
-function addSection(t){saveSnapshot(t);menus[t].push({id:uid(),section:'Nová sekce',dishes:[]});saveData(t);render(t);updateUndoBtn(t);}
-function deleteSection(t,sid){if(!confirm('Smazat sekci?'))return;saveSnapshot(t);menus[t]=menus[t].filter(s=>s.id!==sid);saveData(t);render(t);updateUndoBtn(t);}
+function addSection(t){saveSnapshot(t);menus[t].push({id:uid(),section:'Nová sekce',dishes:[]});render(t);updateUndoBtn(t);}
+function deleteSection(t,sid){saveSnapshot(t);menus[t]=menus[t].filter(s=>s.id!==sid);render(t);updateUndoBtn(t);}
 function addDish(t,sid){
   const sec=menus[t].find(s=>s.id===sid);if(!sec)return;
   saveSnapshot(t);
-  const d={id:uid(),name:'Nové jídlo',meta:'',ingredients:['Ingredience (ingredient)']};
-  sec.dishes.push(d);states[t][d.id]={checked:{0:false},comment:'',open:true};
-  saveData(t);render(t);updateUndoBtn(t);
+  const newId=uid();
+  const d={id:newId,name:'',meta:'',ingredients:['Nová ingredience (new ingredient)']};
+  sec.dishes.push(d);states[t][newId]={checked:{0:false},comment:'',open:true};
+  render(t);updateUndoBtn(t);
+  setTimeout(()=>{
+    const nameEl=document.querySelector('#app-'+t+' [data-dish="'+newId+'"] .dish-name');
+    if(nameEl){nameEl.focus();const r=document.createRange();r.selectNodeContents(nameEl);window.getSelection().removeAllRanges();window.getSelection().addRange(r);}
+  },80);
 }
-function deleteDish(t,did){if(!confirm('Smazat jídlo?'))return;saveSnapshot(t);menus[t].forEach(s=>{s.dishes=s.dishes.filter(d=>d.id!==did);});saveData(t);render(t);updateUndoBtn(t);}
+function deleteDish(t,did){saveSnapshot(t);menus[t].forEach(s=>{s.dishes=s.dishes.filter(d=>d.id!==did);});render(t);updateUndoBtn(t);}
 function addIng(t,did){
   const d=allDishes(t).find(x=>x.id===did);if(!d)return;
   saveSnapshot(t);
   d.ingredients.push('Nová ingredience (new ingredient)');
   const i=d.ingredients.length-1;states[t][did].checked[i]=false;states[t][did].open=true;
-  saveData(t);render(t);updateUndoBtn(t);
-  setTimeout(()=>{const rows=document.querySelectorAll('#app-'+t+' [data-dish="'+did+'"] .ing-label');if(rows.length)rows[rows.length-1].focus();},50);
+  render(t);updateUndoBtn(t);
+  setTimeout(()=>{const rows=document.querySelectorAll('#app-'+t+' [data-dish="'+did+'"] .ing-label');if(rows.length)rows[rows.length-1].focus();},80);
 }
 function delIng(t,did,idx){
   const d=allDishes(t).find(x=>x.id===did);if(!d)return;
   saveSnapshot(t);
   d.ingredients.splice(idx,1);
   const nc={};d.ingredients.forEach((_,i)=>{nc[i]=states[t][did].checked[i>=idx?i+1:i]||false;});
-  states[t][did].checked=nc;saveData(t);render(t);updateUndoBtn(t);
+  states[t][did].checked=nc;render(t);updateUndoBtn(t);
 }
 
 // ── DRAG ──────────────────────────────────────────────
