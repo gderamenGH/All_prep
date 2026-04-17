@@ -264,6 +264,21 @@ const DEFAULTS = {
     {section:'Dezert · Dessert',dishes:[
       {id:'kaiserschmarrn',name:'Císařský trhanec „Kaiserschmarrn"',meta:'dezert',ingredients:['Jahodová omáčka s bezinkou (strawberry & elderflower sauce)','Třešňovice (cherries in syrup)','Mandle (almonds)','Vanilková zakysaná smetana (vanilla sour cream)','Cukr (sugar)','Moučkový cukr (icing sugar)','Přepuštěné máslo (clarified butter)']}
     ]},
+    {section:'Obědy · Lunch',dishes:[
+      {id:'obedy_omacky',name:'Omáčky & základy oběd',meta:'mise en place',ingredients:[
+        'Čipotlová majonéza (chipotle mayo)',
+        'Majonéza klasika (classic mayo)',
+        'Marmeláda burger (burger jam)',
+        'Mladý špenát (baby spinach)',
+        'Špičaté zelí (pointed cabbage)',
+        'Dresink zelí (coleslaw dressing)'
+      ]}
+    ]},
+    {section:'Víkend · Weekend',dishes:[
+      {id:'vikend_misc',name:'Víkendové ingredience',meta:'weekend',ingredients:[
+        'Pomerančové segmenty (orange segments)'
+      ]}
+    ]},
     {section:'Dekorace & bylinky · Garnish & herbs',dishes:[
       {id:'byliny',name:'Bylinky & dekorace',meta:'garnish',ingredients:['Kerblík (chervil)','Pažitka (chives)','Vyšlehané máslo (whipped butter)']}
     ]},
@@ -342,17 +357,13 @@ function setSyncStatus(status, msg){
 function initFirebase(){
   setSyncStatus('loading','Načítám data…');
   window._fbListen('menu/cold', val => {
-    // Не перезаписывай пока идёт редактирование
     if(ems.cold) return;
     if(val){
       menus.cold = val;
       menus.cold.forEach(sec=>{sec.id=sec.id||uid();sec.dishes.forEach(d=>{d.id=d.id||uid();});});
-      rebuildState('cold');
-      render('cold');
+      rebuildState('cold'); render('cold');
+      try{localStorage.setItem('spork_cache_cold', JSON.stringify(menus.cold));}catch(e){}
     } else {
-      menus.cold = JSON.parse(JSON.stringify(DEFAULTS.cold));
-      rebuildState('cold');
-      render('cold');
       window._fbSet('menu/cold', menus.cold);
     }
     setSyncStatus('ok','Synchronizováno · Synced');
@@ -362,12 +373,9 @@ function initFirebase(){
     if(val){
       menus.hot = val;
       menus.hot.forEach(sec=>{sec.id=sec.id||uid();sec.dishes.forEach(d=>{d.id=d.id||uid();});});
-      rebuildState('hot');
-      render('hot');
+      rebuildState('hot'); render('hot');
+      try{localStorage.setItem('spork_cache_hot', JSON.stringify(menus.hot));}catch(e){}
     } else {
-      menus.hot = JSON.parse(JSON.stringify(DEFAULTS.hot));
-      rebuildState('hot');
-      render('hot');
       window._fbSet('menu/hot', menus.hot);
     }
     setSyncStatus('ok','Synchronizováno · Synced');
@@ -375,10 +383,8 @@ function initFirebase(){
 }
 
 function saveData(t){
-  if(!fbReady){
-    try{localStorage.setItem('spork_offline_'+t, JSON.stringify(menus[t]));}catch(e){}
-    return;
-  }
+  try{localStorage.setItem('spork_cache_'+t, JSON.stringify(menus[t]));}catch(e){}
+  if(!fbReady) return;
   setSyncStatus('loading','Ukládám…');
   clearTimeout(saveTimeout);
   saveTimeout = setTimeout(()=>{
@@ -388,24 +394,33 @@ function saveData(t){
   }, 1200);
 }
 
+// Загружаем из кэша сразу — не ждём Firebase
+function loadFromCache(){
+  ['cold','hot'].forEach(t=>{
+    try{
+      const cached = localStorage.getItem('spork_cache_'+t);
+      if(cached){
+        menus[t] = JSON.parse(cached);
+        menus[t].forEach(sec=>{sec.id=sec.id||uid();sec.dishes.forEach(d=>{d.id=d.id||uid();});});
+      } else {
+        menus[t] = JSON.parse(JSON.stringify(DEFAULTS[t]));
+      }
+    }catch(e){
+      menus[t] = JSON.parse(JSON.stringify(DEFAULTS[t]));
+    }
+    rebuildState(t); render(t);
+  });
+}
+
+loadFromCache();
+
 // Wait for Firebase
 if(window._fbReady){
   fbReady=true; initFirebase();
 } else {
   window.addEventListener('fb-ready',()=>{fbReady=true; initFirebase();});
-  // Fallback if Firebase doesn't load in 5s
   setTimeout(()=>{
-    if(!fbReady){
-      setSyncStatus('err','Offline režim · Offline mode');
-      ['cold','hot'].forEach(t=>{
-        try{
-          const s=localStorage.getItem('spork_offline_'+t);
-          menus[t]=s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULTS[t]));
-        }catch(e){menus[t]=JSON.parse(JSON.stringify(DEFAULTS[t]));}
-        menus[t].forEach(sec=>{sec.id=sec.id||uid();sec.dishes.forEach(d=>{d.id=d.id||uid();});});
-        rebuildState(t); render(t);
-      });
-    }
+    if(!fbReady) setSyncStatus('err','Offline režim · Offline mode');
   },5000);
 }
 
